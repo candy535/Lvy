@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>expert1的网页导航</title>
+    <meta http-equiv="Content-Security-Policy" content="default-src *;script-src 'self' 'unsafe-inline';style-src 'self' 'unsafe-inline';img-src * data;connect-src *;">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #fff6e4;
+            font-family: "微软雅黑", sans-serif;
+            padding: 30px;
+            min-height: 100vh;
+        }
+        .title-wrap {
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .title {
+            font-size: 28px;
+            font-weight: bold;
+            background: #cce8ff;
+            padding: 8px 20px;
+            border-radius: 12px;
+            display: inline-block;
+            box-shadow: 0 0 15px #cce8ff, 0 0 20px #e6f2ff;
+            background-image: linear-gradient(90deg,#ff7f00,#007bff,#ff69b4,#9333ea,#ffd700,#28c940);
+            background-size: 600% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: textGradient 3s linear infinite;
+        }
+        @keyframes textGradient {
+            0% {background-position:0% 50%;}
+            100% {background-position:100% 50%;}
+        }
+        .typewriter-container {
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 17px;
+            color: #005bb5;
+            font-weight: 500;
+            min-height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .typewriter-text {
+            white-space: nowrap;
+        }
+        .typewriter-cursor {
+            display: inline-block;
+            width: 2px;
+            height: 18px;
+            background-color: #007bff;
+            margin-left: 3px;
+            animation: blink 1s infinite step-end;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        .time-box {
+            text-align: center;
+            font-size: 16px;
+            color: #0066cc;
+            font-weight: bold;
+            background: rgba(255,255,255,0.9);
+            padding: 6px 12px;
+            border-radius: 8px;
+            box-shadow: 0 0 8px #cce8ff;
+            width: fit-content;
+            margin: 0 auto 20px;
+        }
+        .search-container {
+            width: 90%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 0 10px #ffd700, 0 0 15px #fff380;
+            border-radius: 8px;
+        }
+        #search-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 8px 0 0 8px;
+            outline: none;
+            font-size: 16px;
+            background: #fff;
+        }
+        #search-btn {
+            padding: 12px 20px;
+            background: #ffd700;
+            border: none;
+            border-radius: 0 8px 8px 0;
+            cursor: pointer;
+            font-weight: bold;
+            color: #8b5a2b;
+            white-space: nowrap;
+        }
+        .search-engine {
+            width: 90%;
+            margin: 0 auto 25px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            padding-left: 5px;
+            font-size: 16px;
+            padding-top: 40px;
+            position: relative;
+        }
+        .search-engine::before {
+            content: "作品集：";
+            color: #32b932;
+            font-size: 22px;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        .game-collection-title,
+        .ai-collection-title,
+        .tool-collection-title,
+        .fun-collection-title,
+        .simulator-collection-title,
+        .advanced-collection-title {
+            color: #32b932;
+            font-size: 22px;
+            font-weight: bold;
+            width: 90%;
+            margin: 0 auto 15px 5%;
+        }
+        .engine-btn {
+            padding: 5px 12px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 16px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            position: relative;
+        }
+        .engine-btn.active {
+            color: #0066cc;
+            font-weight: bold;
+        }
+        .engine-btn.active::after {
+            content: "";
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: #ffd700;
+            border-radius: 2px;
+        }
+        .engine-btn::before {
+            content: "";
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+        .engine-btn[data-engine="baidu"]::before {
+            background: #2d84ff;
+            content: "百";
+            color: white;
+            font-size: 12px;
+            text-align: center;
+            line-height: 18px;
+        }
+        .engine-btn[data-engine="bing"]::before {
+            background: #0089ff;
+            content: "必";
+            color: white;
+            font-size: 12px;
+            text-align: center;
+            line-height: 18px;
+        }
+        .engine-btn[data-engine="360"]::before {
+            background: #ff9500;
+            content: "3";
+            color: white;
+            font-size: 12px;
+            text-align: center;
+            line-height: 18px;
+        }
+        .engine-btn[data-engine="sogou"]::before {
+            background: #ff6600;
+            content: "搜";
+            color: white;
+            font-size: 12px;
+            text-align: center;
+            line-height: 18px;
+        }
+        .engine-btn[data-engine="toutiao"]::before {
+            background: #ff3300;
+            content: "头";
+            color: white;
+            font-size: 12px;
+            text-align: center;
+            line-height: 18px;
+        }
+        .engine-btn[data-engine="local"]::before {
+            background: #009999;
+            content: "站";
+            color: white;
+            font-size: 12px;
+            text-align: center;
+            line-height: 18px;
+        }
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            width: 90%;
+            margin: 0 auto 30px;
+        }
+        .nav-card {
+            background: #fff;
+            padding: 18px 0;
+            text-align: center;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #333;
+            border: 1px solid #eee;
+            font-size: 16px;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .nav-card.highlight {
+            background: #fff380;
+            border-color: #ffd700;
+            transform: scale(1.03);
+        }
+        .tag {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            padding: 2px 6px;
+            font-size: 12px;
+            font-weight: bold;
+            border-radius: 4px;
+            color: #fff;
+        }
+        .tag-new {
+            background-color: #f53f3f;
+        }
+        .tag-recommend {
+            background-color: #10b981;
+        }
+        .tag-hot {
+            background-color: #4dc4ff;
+        }
+        .status-bar {
+            width: 90%;
+            margin: 0 auto 25px;
+            display: flex;
+            gap: 25px;
+            font-size: 16px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            line-height: 1.8;
+            margin-top: 40px;
+        }
+        .status-item {
+            display: flex;
+            align-items: center;
+        }
+        .time-tag {
+            border: 2px solid #333;
+            padding: 3px 8px;
+            border-radius: 4px;
+            margin-left: 5px;
+            white-space: nowrap;
+            background: #fff;
+        }
+        .desc-box {
+            width: 90%;
+            margin: 0 auto;
+            border-radius: 8px;
+            padding: 20px;
+            background: #fff;
+            text-align: center;
+            font-size: 16px;
+            line-height: 1.6;
+            box-shadow: 0 0 10px #ffd700, 0 0 15px #fff380;
+        }
+        #securityAlert {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ff4444;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            display: none;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+    <div id="securityAlert">检测到危险代码，已拦截！</div>
+
+    <div class="title-wrap">
+        <div class="title">expert1的网页导航</div>
+    </div>
+
+    <div class="typewriter-container">
+        <span class="typewriter-text" id="typeText"></span>
+        <span class="typewriter-cursor"></span>
+    </div>
+
+    <div class="time-box" id="timeBox">⏰现在是北京时间：${h}:${m}:${s}</div>
+
+    <div class="search-container">
+        <input type="text" id="search-input" placeholder="站内搜索">
+        <button id="search-btn">搜索</button>
+    </div>
+
+    <div class="search-engine">
+        <button class="engine-btn active" data-engine="baidu">百度</button>
+        <button class="engine-btn" data-engine="bing">必应</button>
+        <button class="engine-btn" data-engine="360">360</button>
+        <button class="engine-btn" data-engine="sogou">搜狗</button>
+        <button class="engine-btn" data-engine="toutiao">头条</button>
+        <button class="engine-btn" data-engine="local">站内</button>
+    </div>
+
+    <div class="nav-grid">
+        <a href="https://ekf9trli.html2web.com/" class="nav-card" target="_blank">
+            <div>作品集</div>
+            <div>expert1 的导航</div>
+        </a>
+        <a href="https://69e06d224b92d.site123.me/" class="nav-card" target="_blank">expert1网页海报</a>
+        <a href="https://666tes.web.fc2.com/" class="nav-card" target="_blank">666tes的网页导航</a>
+        <a href="https://cstimer.net/" class="nav-card" target="_blank">魔方计时器</a>
+        <a href="http://www.wztf121.com/jys" class="nav-card" target="_blank">台风网</a>
+        <a href="https://zoom.earth/" class="nav-card" target="_blank">高级台风网</a>
+        <a href="https://www.playok.com/zh/gomoku/" class="nav-card" target="_blank">在线五子棋</a>
+        <a href="https://get.qiaobuqiao.com/box/games/nicemofang/" class="nav-card" target="_blank">在线魔方</a>
+        <a href="https4j119zsh.html2web.com/" class="nav-card" target="_blank">二阶魔方教程</a>
+        <a href="https://55nqtxwv.html2web.com/" class="nav-card" target="_blank">二阶魔方教程层先法</a>
+        <a href="https://s2z95dub.html2web.com" class="nav-card" target="_blank">三阶魔方教程（层先法）</a>
+        <a href="https://hcb6xeeu.html2web.com/" class="nav-card" target="_blank">1分钟舒缓钢琴前奏</a>
+    </div>
+
+    <div class="game-collection-title">游戏集：</div>
+    <div class="nav-grid">
+        <a href="https://v83nvxu8.html2web.com" class="nav-card" target="_blank">经典闪飞机</a>
+        <a href="https://sai43zlc.html2web.com" class="nav-card" target="_blank">经典赛车游戏</a>
+        <a href="https://o6jswrnn.html2web.com/" class="nav-card" target="_blank">俄罗斯方块</a>
+        <a href="https://tgykliq4.html2web.com" class="nav-card" target="_blank">Tank vs Blocks</a>
+        <a href="https://elk4cxgj.html2web.com" class="nav-card" target="_blank">马里奥游戏</a>
+        <a href="https://rh0talxf.html2web.com/" class="nav-card" target="_blank">极速切水果</a>
+        <a href="https://bsduh5xe.html2web.com/" class="nav-card" target="_blank">猜拳游戏</a>
+        <a href="https://sylshaze.html2web.com/" class="nav-card" target="_blank">扫雷游戏</a>
+        <a href="https://oxh2mqhl.html2web.com/" class="nav-card" target="_blank">数字华容道</a>
+        <a href="https://fie6j6l6.html2web.com/" class="nav-card" target="_blank">星际收集者</a>
+        <a href="https://wepssimi.html2web.com/" class="nav-card" target="_blank">贪吃蛇游戏</a>
+        <a href="https://xz5a08k1.html2web.com/" class="nav-card" target="_blank">龙之谷 - 地牢冒险</a>
+        <a href="https://d1c7t2py.html2web.com/" class="nav-card" target="_blank">太空陨石大冒险</a>
+        <a href="https://81dcfnjm.html2web.com/" class="nav-card" target="_blank">彩色泡泡点击游戏</a>
+        <a href="https://0ah0p9x9.html2web.com/" class="nav-card" target="_blank">2048小游戏</a>
+        <a href="https://iaxlky7p.html2web.com/" class="nav-card" target="_blank">赛博打地鼠</a>
+        <a href="https://mnzmv1xg.html2web.com/" class="nav-card" target="_blank">注意力测试</a>
+        <a href="https://swyk2d9q.html2web.com/" class="nav-card" target="_blank">5秒测式手速</a>
+    </div>
+
+    <div class="ai-collection-title">AI 集：</div>
+    <div class="nav-grid">
+        <a href="https://mx8x8lpt.html2web.com/" class="nav-card" target="_blank">小弦Al小助手<span class="tag tag-hot">🔥火爆</span></a>
+        <a href="https://p32x3v1s.html2web.com/" class="nav-card" target="_blank">五子棋AI<span class="tag tag-hot">🔥火爆</span></a>
+        <a href="https://yl9zhiiq.html2web.com" class="nav-card" target="_blank">AI翻译&计算全能助手</a>
+        <a href="https://4telnasn.html2web.com/" class="nav-card" target="_blank">井字棋AI<span class="tag tag-hot">🔥火爆</span></a>
+        <a href="https://45kzmaez.html2web.com/" class="nav-card" target="_blank">小弦聊天AI<span class="tag tag-hot">🔥火爆</span></a>
+    </div>
+
+    <div class="tool-collection-title">工具集：</div>
+    <div class="nav-grid">
+        <a href="https://7ni4gpz7.html2web.com/" class="nav-card" target="_blank">云端备忘录</a>
+        <a href="https://sdul86mq.html2web.com/" class="nav-card" target="_blank">expert1聊天室</a>
+        <a href="https://3njlpo41.html2web.com/" class="nav-card" target="_blank">北京时间 - 极简版</a>
+        <a href="https://97d40b61.html2web.com/" class="nav-card" target="_blank">今天吃啥呀？</a>
+        <a href="https://enwkf7hl.html2web.com/" class="nav-card" target="_blank">骰子投掷工具</a>
+        <a href="https://qr43n0sg.html2web.com/" class="nav-card" target="_blank">倒计时工具<span class="tag tag-recommend">推荐</span></a>
+        <a href="https://zfcxdm6x.html2web.com" class="nav-card" target="_blank">在线钢琴<span class="tag tag-recommend">推荐</span></a>
+        <a href="https://5nonr2no.html2web.com/" class="nav-card" target="_blank">AI工具导航<span class="tag tag-recommend">推荐</span></a>
+        <a href="https://nx8gnydd.html2web.com/" class="nav-card" target="_blank">expert1-单位换算器<span class="tag tag-recommend">推荐</span></a>
+        <a href="https://z733wbkm.html2web.com" class="nav-card" target="_blank">文言文翻译器</a>
+        <a href="https://37n6lwpy.html2web.com/" class="nav-card" target="_blank">全能几何画板</a>
+        <a href="https://e7ytmpb2.html2web.com/" class="nav-card" target="_blank">BMI计算器</a>
+        <a href="https://kh3oz40g.html2web.com/" class="nav-card" target="_blank">圆计算机</a>
+        <a href="https://f1o8ci2z.html2web.com/" class="nav-card" target="_blank">在线二维码生成器</a>
+        <a href="https://4xubvlo8.html2web.com/" class="nav-card" target="_blank">番茄工作计时器<span class="tag tag-recommend">推荐</span></a>
+        <a href="https://tjog38tx.html2web.com/" class="nav-card" target="_blank">数字性质智能分析器<span class="tag tag-recommend">推荐</span></a>
+        <a href="https://y3no19r6.html2web.com/" class="nav-card" target="_blank">四字成语万能匹配器<span class="tag tag-recommend">推荐</span></a>
+        <a href="https://9dzfew9y.html2web.com/" class="nav-card" target="_blank">条形码生成器</a>
+        <a href="https://gf46pj61.html2web.com/" class="nav-card" target="_blank">考试成绩许愿版</a>
+        <a href="https://4xnmrwwu.html2web.com/" class="nav-card" target="_blank">随机密码生成器</a>
+        <a href="https://ibsucci5.html2web.com/" class="nav-card" target="_blank">速度换算器</a>
+    </div>
+
+    <div class="simulator-collection-title">模拟器：</div>
+    <div class="nav-grid">
+        <a href="https://n9w8p7hb.html2web.com" class="nav-card" target="_blank">3D电风扇</a>
+        <a href="https://oj4mksrb.html2web.com/" class="nav-card" target="_blank">智能空调模拟器</a>
+        <a href="https://as619jus.html2web.com/" class="nav-card" target="_blank">3D 太阳系<span class="tag tag-hot">🔥火爆</span></a>
+        <a href="https://i9u3nlet.html2web.com/" class="nav-card" target="_blank">Windows更新模拟器<span class="tag tag-new">New</span></a>
+        <a href="https://5guiegud.html2web.com" class="nav-card" target="_blank">3D赛车</a>
+        <a href="https://sh4x8lgz.html2web.com/" class="nav-card" target="_blank">3D 房屋漫游</a>
+    </div>
+
+    <div class="fun-collection-title">趣味搞笑集：</div>
+    <div class="nav-grid">
+        <a href="https://fwuogxbq.html2web.com" class="nav-card" target="_blank">趣味链接1</a>
+        <a href="https://6hiqtn3b.html2web.com/" class="nav-card" target="_blank">趣味链接2</a>
+        <a href="https://k401xm9w.html2web.com" class="nav-card" target="_blank">趣味链接3</a>
+        <a href="https://xopn1rsw.html2web.com/" class="nav-card" target="_blank">趣味链接4</a>
+        <a href="https://v7avdyjj.html2web.com/" class="nav-card" target="_blank">趣味链接5</a>
+        <a href="https://cyrlwrpf.html2web.com/" class="nav-card" target="_blank">趣味链接6</a>
+    </div>
+
+    <div class="advanced-collection-title">高级：</div>
+    <div class="nav-grid">
+        <a href="https://ime00lux.html2web.com/" class="nav-card" target="_blank">expert1云电脑</a>
+        <a href="https://rwyzwfbl.html2web.com/" class="nav-card" target="_blank">expert1音乐配置1</a>
+        <a href="https://5062k4g4.html2web.com/" class="nav-card" target="_blank">expert1音乐配置2</a>
+        <a href="https://yzzsbzlj.html2web.com/" class="nav-card" target="_blank">expert1音乐配置3</a>
+        <a href="https://3uwrv1td.html2web.com/" class="nav-card" target="_blank">expert1音乐配置4</a>
+        <a href="https://13cqivo9.html2web.com/" class="nav-card" target="_blank">expert1音乐配置5</a>
+        <a href="https://sfrl71t9.html2web.com/" class="nav-card" target="_blank">expert1音乐配置6</a>
+        <a href="https://oa60lx5w.html2web.com/" class="nav-card" target="_blank">expert1高级配置</a>
+        <a href="https://czq191x6.html2web.com/" class="nav-card" target="_blank">expert1其它配置</a>
+    </div>
+
+    <div class="status-bar">
+        <div class="status-item">
+            <span>页面加载时延：</span>
+            <span class="time-tag" id="time-tag">计算中...</span>
+        </div>
+    </div>
+
+    <div class="desc-box">
+        作者声明：本站启用浏览器CSP安全策略、前端防复制保护<br>
+        仅做基础前端安全防护，无后端硬件防火墙<br>
+        欢迎任何人来咨询
+    </div>
+
+    <script>
+        document.oncontextmenu = e => e.preventDefault();
+        document.onselectstart = e => e.preventDefault();
+        document.oncopy = e => e.preventDefault();
+        document.oncut = e => e.preventDefault();
+
+        window.addEventListener('load', function() {
+            const loadTime = Math.round(performance.now());
+            document.getElementById('time-tag').textContent = loadTime + ' 毫秒';
+        });
+
+        let currentEngine = "baidu";
+        document.querySelectorAll(".engine-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                document.querySelectorAll(".engine-btn").forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                currentEngine = btn.dataset.engine;
+            });
+        });
+
+        function localSearch(keyword) {
+            const cards = document.querySelectorAll(".nav-card");
+            cards.forEach(card => card.classList.remove("highlight"));
+            if (!keyword) return;
+            let found = false;
+            const searchText = keyword.toLowerCase().replace("al","ai");
+            cards.forEach(card => {
+                const cardText = card.innerText.toLowerCase();
+                if (cardText.includes(searchText)) {
+                    card.classList.add("highlight");
+                    found = true;
+                }
+            });
+            if (!found) alert("未找到相关内容");
+        }
+
+        document.getElementById("search-btn").addEventListener("click", function() {
+            const keyword = document.getElementById("search-input").value.trim();
+            if (!keyword) return;
+            if (currentEngine === "local") {
+                localSearch(keyword);
+            } else {
+                let url = "";
+                switch(currentEngine) {
+                    case "baidu": url = "https://www.baidu.com/s?wd=" + encodeURIComponent(keyword); break;
+                    case "bing": url = "https://cn.bing.com/search?q=" + encodeURIComponent(keyword); break;
+                    case "360": url = "https://www.so.com/s?q=" + encodeURIComponent(keyword); break;
+                    case "sogou": url = "https://www.sogou.com/web?query=" + encodeURIComponent(keyword); break;
+                    case "toutiao": url = "https://so.toutiao.com/search/?keyword=" + encodeURIComponent(keyword); break;
+                }
+                if (url) window.open(url, "_blank");
+            }
+        });
+
+        document.getElementById("search-input").addEventListener("keydown", function(e) {
+            if (e.key === "Enter") {
+                document.getElementById("search-btn").click();
+            }
+        });
+
+        const texts = [
+            "一站直达，高效上网从这里开始",
+            "更高效的上网入口，从expert1网页导航开始",
+            "聚合常用网站与优质资源，分类清晰，搜索方便"
+        ];
+        let textIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        const typeSpeed = 90;
+        const deleteSpeed = 60;
+        const pauseAfterTyping = 2200;
+        const pauseAfterDelete = 600;
+        const typeTextEl = document.getElementById("typeText");
+
+        function typeWriter() {
+            const current = texts[textIndex];
+            if (isDeleting) {
+                typeTextEl.textContent = current.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                typeTextEl.textContent = current.substring(0, charIndex + 1);
+                charIndex++;
+            }
+            if (!isDeleting && charIndex === current.length) {
+                setTimeout(() => { isDeleting = true; typeWriter(); }, pauseAfterTyping);
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                textIndex = (textIndex + 1) % texts.length;
+                setTimeout(typeWriter, pauseAfterDelete);
+            } else {
+                setTimeout(typeWriter, isDeleting ? deleteSpeed : typeSpeed);
+            }
+        }
+        typeWriter();
+
+        function updateTime() {
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('timeBox').innerText = `⏰现在是北京时间：${h}:${m}:${s}`;
+        }
+        updateTime();
+        setInterval(updateTime, 1000);
+    </script>
+</body>
+</html>

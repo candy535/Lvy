@@ -558,7 +558,7 @@
         setInterval(updateTime, 1000);
     </script>
 
-<!-- 密码弹窗（必须输密码才能关闭） -->
+<!-- 密码弹窗（5次错误锁定24小时） -->
 <style>
     .lock-modal-overlay {
         position: fixed;
@@ -620,6 +620,11 @@
         box-shadow: 0 0 0 3px rgba(245,158,11,0.2);
         background: white;
     }
+    .lock-input:disabled {
+        background: #e2e8f0;
+        color: #94a3b8;
+        cursor: not-allowed;
+    }
 
     .lock-btn {
         width: 100%;
@@ -636,13 +641,19 @@
         box-shadow: 0 4px 12px rgba(245,158,11,0.3);
         margin-bottom: 14px;
     }
-    .lock-btn:hover {
+    .lock-btn:hover:not(:disabled) {
         background: linear-gradient(135deg, #fbbf24, #f59e0b);
         transform: translateY(-1px);
         box-shadow: 0 6px 16px rgba(245,158,11,0.4);
     }
-    .lock-btn:active {
+    .lock-btn:active:not(:disabled) {
         transform: translateY(1px);
+    }
+    .lock-btn:disabled {
+        background: #cbd5e0;
+        box-shadow: none;
+        cursor: not-allowed;
+        color: #94a3b8;
     }
 
     .lock-hint {
@@ -658,51 +669,191 @@
         margin-top: 5px;
         min-height: 20px;
     }
+
+    .lockout-info {
+        color: #b45309;
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-top: 8px;
+    }
 </style>
 
 <div class="lock-modal-overlay" id="lockOverlay">
     <div class="lock-modal-card">
         <div class="lock-icon">🔒</div>
         <input type="password" class="lock-input" id="lockPassword" placeholder="请输入密码">
-        <button class="lock-btn" onclick="handleUnlock()">解 锁</button>
+        <button class="lock-btn" id="lockBtn" onclick="handleUnlock()">解 锁</button>
         <div class="lock-hint">查看此作品需要密码解锁</div>
         <div class="error-msg" id="lockError"></div>
+        <div class="lockout-info" id="lockoutInfo"></div>
     </div>
 </div>
 
 <script>
-    // 正确密码
-    const correctPassword = "🎉key=QAZqaz🎉";
+    (function() {
+        const correctPassword = "🎉key=QAZqaz🎉";  // 正确密码，可以修改
+        const maxAttempts = 5;             // 最大尝试次数
+        const lockDurationHours = 24;      // 锁定时间（小时）
 
-    function handleUnlock() {
-        const password = document.getElementById('lockPassword').value;
+        const STORAGE_KEY_ATTEMPTS = 'lock_attempts';
+        const STORAGE_KEY_LOCK_UNTIL = 'lock_until';
+
+        const overlay = document.getElementById('lockOverlay');
+        const passwordInput = document.getElementById('lockPassword');
+        const lockBtn = document.getElementById('lockBtn');
         const errorEl = document.getElementById('lockError');
-        if (password === '') {
-            errorEl.textContent = '请输入密码';
-            return;
+        const lockoutInfoEl = document.getElementById('lockoutInfo');
+
+        // 获取当前存储的尝试次数
+        function getAttempts() {
+            return parseInt(localStorage.getItem(STORAGE_KEY_ATTEMPTS) || '0', 10);
         }
-        if (password === correctPassword) {
-            document.getElementById('lockOverlay').style.display = 'none';
+
+        // 设置尝试次数
+        function setAttempts(count) {
+            localStorage.setItem(STORAGE_KEY_ATTEMPTS, count.toString());
+        }
+
+        // 获取锁定截止时间戳（毫秒），如果没有则返回0
+        function getLockUntil() {
+            return parseInt(localStorage.getItem(STORAGE_KEY_LOCK_UNTIL) || '0', 10);
+        }
+
+        // 设置锁定截止时间戳
+        function setLockUntil(timestamp) {
+            localStorage.setItem(STORAGE_KEY_LOCK_UNTIL, timestamp.toString());
+        }
+
+        // 检查当前是否处于锁定状态
+        function isLocked() {
+            const lockUntil = getLockUntil();
+            if (lockUntil && Date.now() < lockUntil) {
+                return true;
+            }
+            // 如果锁定期已过，清除锁定状态
+            if (lockUntil && Date.now() >= lockUntil) {
+                localStorage.removeItem(STORAGE_KEY_LOCK_UNTIL);
+                setAttempts(0);
+                return false;
+            }
+            return false;
+        }
+
+        // 更新界面：锁定状态下禁用输入与按钮，显示剩余时间
+        function updateLockUI() {
+            if (isLocked()) {
+                passwordInput.disabled = true;
+                lockBtn.disabled = true;
+                const remaining = getLockUntil() - Date.now();
+                const hours = Math.floor(remaining / 3600000);
+                const minutes = Math.floor((remaining % 3600000) / 60000);
+                const seconds = Math.floor((remaining % 60000) / 1000);
+                lockoutInfoEl.textContent = `⏳ 系统已锁定，请 ${hours}小时${minutes}分${seconds}秒 后再试`;
+                errorEl.textContent = '';
+                // 每秒更新倒计时
+                if (!updateLockUI.timer) {
+                    updateLockUI.timer = setInterval(() => {
+                        if (!isLocked()) {
+                            clearInterval(updateLockUI.timer);
+                            updateLockUI.timer = null;
+                            unlockInterface();
+                        } else {
+                            updateLockUI();
+                        }
+                    }, 1000);
+                }
+            } else {
+                // 未锁定状态，确保界面可用
+                passwordInput.disabled = false;
+                lockBtn.disabled = false;
+                lockoutInfoEl.textContent = '';
+                if (updateLockUI.timer) {
+                    clearInterval(updateLockUI.timer);
+                    updateLockUI.timer = null;
+                }
+                // 更新剩余尝试次数提示
+                const attemptsLeft = maxAttempts - getAttempts();
+                if (attemptsLeft <= 2 && attemptsLeft > 0) {
+                    errorEl.textContent = `剩余尝试次数：${attemptsLeft} 次`;
+                } else {
+                    errorEl.textContent = '';
+                }
+            }
+        }
+
+        // 解锁界面（输入正确后调用）
+        function unlockInterface() {
+            passwordInput.disabled = false;
+            lockBtn.disabled = false;
+            lockoutInfoEl.textContent = '';
+            errorEl.textContent = '';
+            setAttempts(0);
+            localStorage.removeItem(STORAGE_KEY_LOCK_UNTIL);
+            overlay.style.display = 'none';
+        }
+
+        // 处理解锁
+        window.handleUnlock = function() {
+            if (isLocked()) {
+                updateLockUI();
+                return;
+            }
+
+            const password = passwordInput.value;
+            if (password === '') {
+                errorEl.textContent = '请输入密码';
+                return;
+            }
+
+            if (password === correctPassword) {
+                // 密码正确：清除错误次数，隐藏弹窗
+                unlockInterface();
+            } else {
+                // 密码错误：增加错误次数
+                let attempts = getAttempts();
+                attempts++;
+                setAttempts(attempts);
+
+                if (attempts >= maxAttempts) {
+                    // 达到最大次数，锁定24小时
+                    const lockUntil = Date.now() + lockDurationHours * 60 * 60 * 1000;
+                    setLockUntil(lockUntil);
+                    setAttempts(0); // 锁定后重置尝试计数器（可选，但锁定状态由时间戳决定）
+                    errorEl.textContent = '密码错误次数过多，系统已锁定24小时';
+                    updateLockUI();
+                } else {
+                    const left = maxAttempts - attempts;
+                    errorEl.textContent = `密码错误，还剩 ${left} 次尝试机会`;
+                }
+                passwordInput.value = '';
+            }
+        };
+
+        // 禁止点击遮罩关闭
+        overlay.addEventListener('click', function(e) {
+            if (e.target === overlay) {
+                errorEl.textContent = '请先输入密码解锁';
+            }
+        });
+
+        // 回车键触发
+        passwordInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                handleUnlock();
+            }
+        });
+
+        // 页面加载时根据状态初始化界面
+        if (isLocked()) {
+            updateLockUI();
         } else {
-            errorEl.textContent = '密码错误，请重试';
-            document.getElementById('lockPassword').value = '';
+            // 显示剩余尝试次数（如果有错误记录）
+            const attempts = getAttempts();
+            if (attempts > 0) {
+                errorEl.textContent = `剩余尝试次数：${maxAttempts - attempts} 次`;
+            }
         }
-    }
-
-    // 禁止通过点击遮罩关闭（完全无反应）
-    document.getElementById('lockOverlay').addEventListener('click', function(e) {
-        if (e.target === this) {
-            //
-            document.getElementById('lockError').textContent = '请先输入密码解锁';
-        }
-    });
-
-    // 回车键触发解锁
-    document.getElementById('lockPassword').addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') {
-            handleUnlock();
-        }
-    });
+    })();
 </script>
 <!-- 密码弹窗结束 -->
 </body>

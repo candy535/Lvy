@@ -1,5 +1,4 @@
-
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -23,12 +22,22 @@
         }
         .title {
             font-size: 28px;
+            font-weight: bold;
             background: #cce8ff;
             padding: 8px 20px;
             border-radius: 12px;
-            color: #0066cc;
             display: inline-block;
             box-shadow: 0 0 15px #cce8ff, 0 0 20px #e6f2ff;
+            background-image: linear-gradient(90deg,#ff7f00,#007bff,#ff69b4,#9333ea,#ffd700,#28c940);
+            background-size: 600% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: textGradient 3s linear infinite;
+        }
+        @keyframes textGradient {
+            0% {background-position:0% 50%;}
+            100% {background-position:100% 50%;}
         }
         .typewriter-container {
             text-align: center;
@@ -401,7 +410,6 @@
         <a href="https://9dzfew9y.html2web.com/" class="nav-card" target="_blank">条形码生成器</a>
         <a href="https://gf46pj61.html2web.com/" class="nav-card" target="_blank">考试成绩许愿版</a>
         <a href="https://4xnmrwwu.html2web.com/" class="nav-card" target="_blank">随机密码生成器</a>
-        <!-- 仅新增这一行，其余所有内容完全未改动 -->
         <a href="https://ibsucci5.html2web.com/" class="nav-card" target="_blank">速度换算器</a>
     </div>
 
@@ -425,7 +433,6 @@
         <a href="https://cyrlwrpf.html2web.com/" class="nav-card" target="_blank">趣味链接6</a>
     </div>
 
-    <!-- 高级：严格按你最新要求 100% 对应 -->
     <div class="advanced-collection-title">高级：</div>
     <div class="nav-grid">
         <a href="https://ime00lux.html2web.com/" class="nav-card" target="_blank">expert1云电脑</a>
@@ -499,7 +506,7 @@
                     case "baidu": url = "https://www.baidu.com/s?wd=" + encodeURIComponent(keyword); break;
                     case "bing": url = "https://cn.bing.com/search?q=" + encodeURIComponent(keyword); break;
                     case "360": url = "https://www.so.com/s?q=" + encodeURIComponent(keyword); break;
-                    case "sogou": url = "https://www.so.com/web?query=" + encodeURIComponent(keyword); break;
+                    case "sogou": url = "https://www.sogou.com/web?query=" + encodeURIComponent(keyword); break;
                     case "toutiao": url = "https://so.toutiao.com/search/?keyword=" + encodeURIComponent(keyword); break;
                 }
                 if (url) window.open(url, "_blank");
@@ -557,7 +564,6 @@
         updateTime();
         setInterval(updateTime, 1000);
     </script>
-
 <!-- 密码弹窗（5次错误锁定24小时） -->
 <style>
     .lock-modal-overlay {

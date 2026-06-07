@@ -112,7 +112,6 @@
             align-items: center;
             padding-left: 5px;
             font-size: 16px;
-            /* 已删除 padding-top: 40px; 修复布局错位 */
             position: relative;
         }
         .search-engine::before {
@@ -218,7 +217,6 @@
             text-align: center;
             line-height: 18px;
         }
-        /* 新增4个AI搜索按钮图标样式 */
         .engine-btn[data-engine="metaso"]::before {
             background: #722ed1;
             content: "秘";
@@ -230,14 +228,6 @@
         .engine-btn[data-engine="nami"]::before {
             background: #13c2c2;
             content: "纳";
-            color: white;
-            font-size: 12px;
-            text-align: center;
-            line-height: 18px;
-        }
-        .engine-btn[data-engine="yiyan"]::before {
-            background: #ff7d00;
-            content: "言";
             color: white;
             font-size: 12px;
             text-align: center;
@@ -363,7 +353,6 @@
         <button id="search-btn">搜索</button>
     </div>
 
-    <!-- 头条右侧、站内左侧 新增4个AI搜索按钮 -->
     <div class="search-engine">
         <button class="engine-btn active" data-engine="baidu">百度</button>
         <button class="engine-btn" data-engine="bing">必应</button>
@@ -372,7 +361,6 @@
         <button class="engine-btn" data-engine="toutiao">头条</button>
         <button class="engine-btn" data-engine="metaso">秘塔AI</button>
         <button class="engine-btn" data-engine="nami">纳米AI</button>
-        <button class="engine-btn" data-engine="yiyan">文心一言</button>
         <button class="engine-btn" data-engine="chatbd">百度AI</button>
         <button class="engine-btn" data-engine="local">站内</button>
     </div>
@@ -555,12 +543,9 @@
                     case "360": url = "https://www.so.com/s?q=" + encodeURIComponent(keyword); break;
                     case "sogou": url = "https://www.sogou.com/web?query=" + encodeURIComponent(keyword); break;
                     case "toutiao": url = "https://so.toutiao.com/search/?keyword=" + encodeURIComponent(keyword); break;
-                    // 新增4个AI搜索跳转链接
                     case "metaso": url = "https://metaso.cn/?q=" + encodeURIComponent(keyword); break;
                     case "nami": url = "https://www.n.cn/search/?q=" + encodeURIComponent(keyword); break;
-                    case "yiyan": url = "https://yiyan.baidu.com/X1/?q=" + encodeURIComponent(keyword); break;
                     case "chatbd": url = "https://chat.baidu.com/search?word=" + encodeURIComponent(keyword); break;
-                    case "local": break;
                 }
                 if (url) window.open(url, "_blank");
             }
@@ -750,13 +735,11 @@
 
 <script>
     (function() {
-        // ========== 可配置参数 ==========
-        const correctPassword = "🎉key=QAZqaz🎉";  // 正确密码
-        const maxAttempts = 5;                     // 最大错误尝试次数
-        const lockDurationHours = 24;              // 错误过多锁定时长（小时）
-        const cookieExpireDays = 30;               // Cookie记忆时长（天），设置为0则关闭记忆
-        const cookieName = "page_unlocked";        // Cookie名称
-        // ================================
+        const correctPassword = "🎉key=QAZqaz🎉";
+        const maxAttempts = 5;
+        const lockDurationHours = 24;
+        const cookieExpireDays = 30;
+        const cookieName = "page_unlocked";
 
         const STORAGE_KEY_ATTEMPTS = 'lock_attempts';
         const STORAGE_KEY_LOCK_UNTIL = 'lock_until';
@@ -767,7 +750,6 @@
         const errorEl = document.getElementById('lockError');
         const lockoutInfoEl = document.getElementById('lockoutInfo');
 
-        // ========== Cookie操作函数 ==========
         function setCookie(name, value, days) {
             const date = new Date();
             date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
@@ -789,29 +771,23 @@
         function deleteCookie(name) {
             setCookie(name, '', -1);
         }
-        // ===================================
 
-        // 获取当前存储的尝试次数
         function getAttempts() {
             return parseInt(localStorage.getItem(STORAGE_KEY_ATTEMPTS) || '0', 10);
         }
 
-        // 设置尝试次数
         function setAttempts(count) {
             localStorage.setItem(STORAGE_KEY_ATTEMPTS, count.toString());
         }
 
-        // 获取锁定截止时间戳（毫秒）
         function getLockUntil() {
             return parseInt(localStorage.getItem(STORAGE_KEY_LOCK_UNTIL) || '0', 10);
         }
 
-        // 设置锁定截止时间戳
         function setLockUntil(timestamp) {
             localStorage.setItem(STORAGE_KEY_LOCK_UNTIL, timestamp.toString());
         }
 
-        // 检查当前是否处于锁定状态
         function isLocked() {
             const lockUntil = getLockUntil();
             if (lockUntil && Date.now() < lockUntil) {
@@ -825,7 +801,6 @@
             return false;
         }
 
-        // 更新界面：锁定状态下禁用输入与按钮，显示剩余时间
         function updateLockUI() {
             if (isLocked()) {
                 passwordInput.disabled = true;
@@ -864,7 +839,6 @@
             }
         }
 
-        // 解锁界面（输入正确后调用）
         function unlockInterface() {
             passwordInput.disabled = false;
             lockBtn.disabled = false;
@@ -874,13 +848,11 @@
             localStorage.removeItem(STORAGE_KEY_LOCK_UNTIL);
             overlay.style.display = 'none';
             
-            // 解锁成功后设置Cookie记忆
             if (cookieExpireDays > 0) {
                 setCookie(cookieName, "true", cookieExpireDays);
             }
         }
 
-        // 处理解锁
         window.handleUnlock = function() {
             if (isLocked()) {
                 updateLockUI();
@@ -914,27 +886,21 @@
             }
         };
 
-        // 禁止点击遮罩关闭
         overlay.addEventListener('click', function(e) {
             if (e.target === overlay) {
                 errorEl.textContent = '请先输入密码解锁';
             }
         });
 
-        // 回车键触发
         passwordInput.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
                 handleUnlock();
             }
         });
 
-        // ========== 页面初始化 ==========
-        // 先检查是否有解锁Cookie
         if (cookieExpireDays > 0 && getCookie(cookieName) === "true") {
-            // 有Cookie，直接解锁
             overlay.style.display = 'none';
         } else {
-            // 没有Cookie，显示弹窗并检查锁定状态
             if (isLocked()) {
                 updateLockUI();
             } else {

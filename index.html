@@ -218,6 +218,39 @@
             text-align: center;
             line-height: 18px;
         }
+        /* 新增4个AI搜索按钮图标样式 */
+        .engine-btn[data-engine="metaso"]::before {
+            background: #722ed1;
+            content: "秘";
+            color: white;
+            font-size: 12px;
+            text-align: center;
+            line-height: 18px;
+        }
+        .engine-btn[data-engine="nami"]::before {
+            background: #13c2c2;
+            content: "纳";
+            color: white;
+            font-size: 12px;
+            text-align: center;
+            line-height: 18px;
+        }
+        .engine-btn[data-engine="yiyan"]::before {
+            background: #ff7d00;
+            content: "言";
+            color: white;
+            font-size: 12px;
+            text-align: center;
+            line-height: 18px;
+        }
+        .engine-btn[data-engine="chatbd"]::before {
+            background: #2962ff;
+            content: "AI";
+            color: white;
+            font-size: 11px;
+            text-align: center;
+            line-height: 18px;
+        }
         .nav-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -330,12 +363,17 @@
         <button id="search-btn">搜索</button>
     </div>
 
+    <!-- 头条右侧、站内左侧 新增4个AI搜索按钮 -->
     <div class="search-engine">
         <button class="engine-btn active" data-engine="baidu">百度</button>
         <button class="engine-btn" data-engine="bing">必应</button>
         <button class="engine-btn" data-engine="360">360</button>
         <button class="engine-btn" data-engine="sogou">搜狗</button>
         <button class="engine-btn" data-engine="toutiao">头条</button>
+        <button class="engine-btn" data-engine="metaso">秘塔AI</button>
+        <button class="engine-btn" data-engine="nami">纳米AI</button>
+        <button class="engine-btn" data-engine="yiyan">文心一言</button>
+        <button class="engine-btn" data-engine="chatbd">百度AI</button>
         <button class="engine-btn" data-engine="local">站内</button>
     </div>
 
@@ -517,6 +555,12 @@
                     case "360": url = "https://www.so.com/s?q=" + encodeURIComponent(keyword); break;
                     case "sogou": url = "https://www.sogou.com/web?query=" + encodeURIComponent(keyword); break;
                     case "toutiao": url = "https://so.toutiao.com/search/?keyword=" + encodeURIComponent(keyword); break;
+                    // 新增4个AI搜索跳转链接
+                    case "metaso": url = "https://metaso.cn/?q=" + encodeURIComponent(keyword); break;
+                    case "nami": url = "https://www.n.cn/search/?q=" + encodeURIComponent(keyword); break;
+                    case "yiyan": url = "https://yiyan.baidu.com/X1/?q=" + encodeURIComponent(keyword); break;
+                    case "chatbd": url = "https://chat.baidu.com/search?word=" + encodeURIComponent(keyword); break;
+                    case "local": break;
                 }
                 if (url) window.open(url, "_blank");
             }

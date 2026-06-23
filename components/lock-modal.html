@@ -1,1 +1,10 @@
-
+<div class="lock-modal-overlay" id="lockOverlay">
+    <div class="lock-modal-card">
+        <div class="lock-icon">🔒</div>
+        <input type="password" class="lock-input" id="lockPassword" placeholder="请输入密码">
+        <button class="lock-btn" id="lockBtn" onclick="handleUnlock()">解 锁</button>
+        <div class="lock-hint">查看此作品需要密码解锁</div>
+        <div class="error-msg" id="lockError"></div>
+        <div class="lockout-info" id="lockoutInfo"></div>
+    </div>
+</div>

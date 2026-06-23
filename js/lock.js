@@ -8,11 +8,12 @@
     const STORAGE_KEY_ATTEMPTS = 'lock_attempts';
     const STORAGE_KEY_LOCK_UNTIL = 'lock_until';
 
-    const overlay = document.getElementById('lockOverlay');
-    const passwordInput = document.getElementById('lockPassword');
-    const lockBtn = document.getElementById('lockBtn');
-    const errorEl = document.getElementById('lockError');
-    const lockoutInfoEl = document.getElementById('lockoutInfo');
+    // 先声明变量，此时DOM还没加载，先存空值，后面再重新获取
+    let overlay = null;
+    let passwordInput = null;
+    let lockBtn = null;
+    let errorEl = null;
+    let lockoutInfoEl = null;
 
     function setCookie(name, value, days) {
         const date = new Date();
@@ -66,6 +67,7 @@
     }
 
     function updateLockUI() {
+        if (!overlay) return;
         if (isLocked()) {
             passwordInput.disabled = true;
             lockBtn.disabled = true;
@@ -104,6 +106,7 @@
     }
 
     function unlockInterface() {
+        if (!overlay) return;
         passwordInput.disabled = false;
         lockBtn.disabled = false;
         lockoutInfoEl.textContent = '';
@@ -118,6 +121,7 @@
     }
 
     window.handleUnlock = function() {
+        if (!overlay) return;
         if (isLocked()) {
             updateLockUI();
             return;
@@ -127,3 +131,58 @@
         if (password === '') {
             errorEl.textContent = '请输入密码';
             return;
+        }
+
+        if (password === correctPassword) {
+            unlockInterface();
+        } else {
+            let attempts = getAttempts();
+            attempts++;
+            setAttempts(attempts);
+
+            if (attempts >= maxAttempts) {
+                const lockUntil = Date.now() + lockDurationHours * 60 * 60 * 1000;
+                setLockUntil(lockUntil);
+                setAttempts(0);
+                errorEl.textContent = '密码错误次数过多，系统已锁定24小时';
+                updateLockUI();
+            } else {
+                const left = maxAttempts - attempts;
+                errorEl.textContent = `密码错误，还剩 ${left} 次尝试机会`;
+            }
+            passwordInput.value = '';
+        }
+    };
+
+    // 页面DOM全部加载完成后，重新获取弹窗元素 + 绑定事件
+    document.addEventListener('DOMContentLoaded', function() {
+        // 重新获取DOM节点（此时组件已经fetch加载完成）
+        overlay = document.getElementById('lockOverlay');
+        passwordInput = document.getElementById('lockPassword');
+        lockBtn = document.getElementById('lockBtn');
+        errorEl = document.getElementById('lockError');
+        lockoutInfoEl = document.getElementById('lockoutInfo');
+
+        if (!overlay || !passwordInput || !lockBtn) return;
+
+        // 绑定点击解锁
+        lockBtn.onclick = handleUnlock;
+        // 回车解锁
+        passwordInput.onkeydown = function(e) {
+            if(e.key === 'Enter') handleUnlock();
+        }
+        // 点击遮罩提示
+        overlay.addEventListener('click', function(e) {
+            if (e.target === overlay) {
+                errorEl.textContent = '请先输入密码解锁';
+            }
+        });
+
+        // 初始化锁定状态UI
+        if (getCookie(cookieName) === "true") {
+            overlay.style.display = 'none';
+        } else {
+            updateLockUI();
+        }
+    });
+})();

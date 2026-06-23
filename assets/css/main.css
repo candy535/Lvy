@@ -1,1 +1,327 @@
-
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    background-color: #fff6e4;
+    font-family: "微软雅黑", sans-serif;
+    padding: 30px;
+    min-height: 100vh;
+}
+.title-wrap {
+    text-align: center;
+    margin-bottom: 8px;
+}
+.title {
+    font-size: 28px;
+    font-weight: bold;
+    background: #cce8ff;
+    padding: 8px 20px;
+    border-radius: 12px;
+    display: inline-block;
+    box-shadow: 0 0 15px #cce8ff, 0 0 20px #e6f2ff;
+    background-image: linear-gradient(90deg,#ff7f00,#007bff,#ff69b4,#9333ea,#ffd700,#28c940);
+    background-size: 600% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: textGradient 3s linear infinite;
+}
+@keyframes textGradient {
+    0% {background-position:0% 50%;}
+    100% {background-position:100% 50%;}
+}
+.typewriter-container {
+    text-align: center;
+    margin-bottom: 15px;
+    font-size: 17px;
+    color: #005bb5;
+    font-weight: 500;
+    min-height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.typewriter-text {
+    white-space: nowrap;
+}
+.typewriter-cursor {
+    display: inline-block;
+    width: 2px;
+    height: 18px;
+    background-color: #007bff;
+    margin-left: 3px;
+    animation: blink 1s infinite step-end;
+}
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+.time-box {
+    text-align: center;
+    font-size: 16px;
+    color: #0066cc;
+    font-weight: bold;
+    background: rgba(255,255,255,0.9);
+    padding: 6px 12px;
+    border-radius: 8px;
+    box-shadow: 0 0 8px #cce8ff;
+    width: fit-content;
+    margin: 0 auto 20px;
+}
+.search-container {
+    width: 90%;
+    margin: 0 auto 15px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 0 10px #ffd700, 0 0 15px #fff380;
+    border-radius: 8px;
+}
+#search-input {
+    flex: 1;
+    padding: 12px 15px;
+    border: none;
+    border-radius: 8px 0 0 8px;
+    outline: none;
+    font-size: 16px;
+    background: #fff;
+}
+#search-btn {
+    padding: 12px 20px;
+    background: #ffd700;
+    border: none;
+    border-radius: 0 8px 8px 0;
+    cursor: pointer;
+    font-weight: bold;
+    color: #8b5a2b;
+    white-space: nowrap;
+}
+.search-engine {
+    width: 90%;
+    margin: 0 auto 25px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    padding-left: 5px;
+    font-size: 16px;
+    position: relative;
+}
+.search-engine::before {
+    content: "作品集：";
+    color: #32b932;
+    font-size: 22px;
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+.game-collection-title,
+.ai-collection-title,
+.tool-collection-title,
+.fun-collection-title,
+.simulator-collection-title,
+.advanced-collection-title {
+    color: #32b932;
+    font-size: 22px;
+    font-weight: bold;
+    width: 90%;
+    margin: 0 auto 15px 5%;
+}
+.engine-btn {
+    padding: 5px 12px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 16px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    position: relative;
+}
+.engine-btn.active {
+    color: #0066cc;
+    font-weight: bold;
+}
+.engine-btn.active::after {
+    content: "";
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: #ffd700;
+    border-radius: 2px;
+}
+.engine-btn::before {
+    content: "";
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+}
+.engine-btn[data-engine="baidu"]::before {
+    background: #2d84ff;
+    content: "百";
+    color: white;
+    font-size: 12px;
+    text-align: center;
+    line-height: 18px;
+}
+.engine-btn[data-engine="bing"]::before {
+    background: #0089ff;
+    content: "必";
+    color: white;
+    font-size: 12px;
+    text-align: center;
+    line-height: 18px;
+}
+.engine-btn[data-engine="360"]::before {
+    background: #ff9500;
+    content: "3";
+    color: white;
+    font-size: 12px;
+    text-align: center;
+    line-height: 18px;
+}
+.engine-btn[data-engine="sogou"]::before {
+    background: #ff6600;
+    content: "搜";
+    color: white;
+    font-size: 12px;
+    text-align: center;
+    line-height: 18px;
+}
+.engine-btn[data-engine="toutiao"]::before {
+    background: #ff3300;
+    content: "头";
+    color: white;
+    font-size: 12px;
+    text-align: center;
+    line-height: 18px;
+}
+.engine-btn[data-engine="local"]::before {
+    background: #009999;
+    content: "站";
+    color: white;
+    font-size: 12px;
+    text-align: center;
+    line-height: 18px;
+}
+.engine-btn[data-engine="metaso"]::before {
+    background: #722ed1;
+    content: "秘";
+    color: white;
+    font-size: 12px;
+    text-align: center;
+    line-height: 18px;
+}
+.engine-btn[data-engine="nami"]::before {
+    background: #13c2c2;
+    content: "纳";
+    color: white;
+    font-size: 12px;
+    text-align: center;
+    line-height: 18px;
+}
+.engine-btn[data-engine="chatbd"]::before {
+    background: #2962ff;
+    content: "AI";
+    color: white;
+    font-size: 11px;
+    text-align: center;
+    line-height: 18px;
+}
+.nav-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    width: 90%;
+    margin: 0 auto 30px;
+}
+.nav-card {
+    background: #fff;
+    padding: 18px 0;
+    text-align: center;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #333;
+    border: 1px solid #eee;
+    font-size: 16px;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+}
+.nav-card.highlight {
+    background: #fff380;
+    border-color: #ffd700;
+    transform: scale(1.03);
+}
+.tag {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    padding: 2px 6px;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 4px;
+    color: #fff;
+}
+.tag-new {
+    background-color: #f53f3f;
+}
+.tag-recommend {
+    background-color: #10b981;
+}
+.tag-hot {
+    background-color: #4dc4ff;
+}
+.status-bar {
+    width: 90%;
+    margin: 0 auto 25px;
+    display: flex;
+    gap: 25px;
+    font-size: 16px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    line-height: 1.8;
+    margin-top: 40px;
+}
+.status-item {
+    display: flex;
+    align-items: center;
+}
+.time-tag {
+    border: 2px solid #333;
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin-left: 5px;
+    white-space: nowrap;
+    background: #fff;
+}
+.desc-box {
+    width: 90%;
+    margin: 0 auto;
+    border-radius: 8px;
+    padding: 20px;
+    background: #fff;
+    text-align: center;
+    font-size: 16px;
+    line-height: 1.6;
+    box-shadow: 0 0 10px #ffd700, 0 0 15px #fff380;
+}
+#securityAlert {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ff4444;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    display: none;
+    z-index: 9999;
+}

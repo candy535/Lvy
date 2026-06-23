@@ -1,182 +1,115 @@
 (function() {
-    const correctPassword = "key=QAZqaz";
-    const maxAttempts = 5;
-    const lockDurationHours = 24;
-    const cookieExpireDays = 30;
-    const cookieName = "page_unlocked";
-
-    const STORAGE_KEY_ATTEMPTS = 'lock_attempts';
-    const STORAGE_KEY_LOCK_UNTIL = 'lock_until';
-
-    function setCookie(name, value, days) {
-        const date = new Date();
-        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-        const expires = "expires=" + date.toUTCString();
-        document.cookie = name + "=" + encodeURIComponent(value) + ";" + expires + ";path=/;SameSite=Lax";
+    // 密码模块初始化（由 lock.js 暴露）
+    if (window.lockModule && typeof window.lockModule.init === 'function') {
+        window.lockModule.init();
     }
 
-    function getCookie(name) {
-        const nameEQ = name + "=";
-        const ca = document.cookie.split(';');
-        for(let i = 0; i < ca.length; i++) {
-            let c = ca[i];
-            while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-            if (c.indexOf(nameEQ) === 0) return decodeURIComponent(c.substring(nameEQ.length, c.length));
-        }
-        return null;
-    }
+    // 加载时延
+    window.addEventListener('load', function() {
+        const loadTime = Math.round(performance.now());
+        const timeTag = document.getElementById('time-tag');
+        if (timeTag) timeTag.textContent = loadTime + ' 毫秒';
+    });
 
-    function deleteCookie(name) {
-        setCookie(name, '', -1);
-    }
+    // 防复制保护
+    document.oncontextmenu = e => e.preventDefault();
+    document.onselectstart = e => e.preventDefault();
+    document.oncopy = e => e.preventDefault();
+    document.oncut = e => e.preventDefault();
 
-    function getAttempts() {
-        return parseInt(localStorage.getItem(STORAGE_KEY_ATTEMPTS) || '0', 10);
-    }
+    // 搜索引擎切换
+    let currentEngine = "baidu";
+    document.querySelectorAll(".engine-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            document.querySelectorAll(".engine-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            currentEngine = btn.dataset.engine;
+        });
+    });
 
-    function setAttempts(count) {
-        localStorage.setItem(STORAGE_KEY_ATTEMPTS, count.toString());
-    }
-
-    function getLockUntil() {
-        return parseInt(localStorage.getItem(STORAGE_KEY_LOCK_UNTIL) || '0', 10);
-    }
-
-    function setLockUntil(timestamp) {
-        localStorage.setItem(STORAGE_KEY_LOCK_UNTIL, timestamp.toString());
-    }
-
-    function isLocked() {
-        const lockUntil = getLockUntil();
-        if (lockUntil && Date.now() < lockUntil) {
-            return true;
-        }
-        if (lockUntil && Date.now() >= lockUntil) {
-            localStorage.removeItem(STORAGE_KEY_LOCK_UNTIL);
-            setAttempts(0);
-            return false;
-        }
-        return false;
-    }
-
-    let overlay, passwordInput, lockBtn, errorEl, lockoutInfoEl;
-    let updateTimer = null;
-
-    function updateLockUI() {
-        if (isLocked()) {
-            passwordInput.disabled = true;
-            lockBtn.disabled = true;
-            const remaining = getLockUntil() - Date.now();
-            const hours = Math.floor(remaining / 3600000);
-            const minutes = Math.floor((remaining % 3600000) / 60000);
-            const seconds = Math.floor((remaining % 60000) / 1000);
-            lockoutInfoEl.textContent = `⏳ 系统已锁定，请 ${hours}小时${minutes}分${seconds}秒 后再试`;
-            errorEl.textContent = '';
-            if (!updateTimer) {
-                updateTimer = setInterval(() => {
-                    if (!isLocked()) {
-                        clearInterval(updateTimer);
-                        updateTimer = null;
-                        unlockInterface();
-                    } else {
-                        updateLockUI();
-                    }
-                }, 1000);
+    // 本地搜索高亮
+    function localSearch(keyword) {
+        const cards = document.querySelectorAll(".nav-card");
+        cards.forEach(card => card.classList.remove("highlight"));
+        if (!keyword) return;
+        let found = false;
+        const searchText = keyword.toLowerCase().replace("al", "ai");
+        cards.forEach(card => {
+            if (card.innerText.toLowerCase().includes(searchText)) {
+                card.classList.add("highlight");
+                found = true;
             }
+        });
+        if (!found) alert("未找到相关内容");
+    }
+
+    // 搜索按钮
+    document.getElementById("search-btn").addEventListener("click", function() {
+        const keyword = document.getElementById("search-input").value.trim();
+        if (!keyword) return;
+        if (currentEngine === "local") {
+            localSearch(keyword);
         } else {
-            passwordInput.disabled = false;
-            lockBtn.disabled = false;
-            lockoutInfoEl.textContent = '';
-            if (updateTimer) {
-                clearInterval(updateTimer);
-                updateTimer = null;
-            }
-            const attemptsLeft = maxAttempts - getAttempts();
-            if (attemptsLeft <= 2 && attemptsLeft > 0) {
-                errorEl.textContent = `剩余尝试次数：${attemptsLeft} 次`;
-            } else {
-                errorEl.textContent = '';
-            }
+            const engineUrls = {
+                baidu: "https://www.baidu.com/s?wd=",
+                bing: "https://cn.bing.com/search?q=",
+                "360": "https://www.so.com/s?q=",
+                sogou: "https://www.sogou.com/web?query=",
+                toutiao: "https://so.toutiao.com/search/?keyword=",
+                metaso: "https://metaso.cn/?q=",
+                nami: "https://www.n.cn/search/?q=",
+                chatbd: "https://chat.baidu.com/search?word="
+            };
+            const url = engineUrls[currentEngine] + encodeURIComponent(keyword);
+            if (url) window.open(url, "_blank");
         }
-    }
+    });
 
-    function unlockInterface() {
-        passwordInput.disabled = false;
-        lockBtn.disabled = false;
-        lockoutInfoEl.textContent = '';
-        errorEl.textContent = '';
-        setAttempts(0);
-        localStorage.removeItem(STORAGE_KEY_LOCK_UNTIL);
-        overlay.style.display = 'none';
-        if (cookieExpireDays > 0) {
-            setCookie(cookieName, "true", cookieExpireDays);
-        }
-    }
+    // 回车搜索
+    document.getElementById("search-input").addEventListener("keydown", function(e) {
+        if (e.key === "Enter") document.getElementById("search-btn").click();
+    });
 
-    window.handleUnlock = function() {
-        if (isLocked()) {
-            updateLockUI();
-            return;
-        }
-        const password = passwordInput.value;
-        if (password === '') {
-            errorEl.textContent = '请输入密码';
-            return;
-        }
-        if (password === correctPassword) {
-            unlockInterface();
+    // 打字机效果
+    const texts = [
+        "一站直达，高效上网从这里开始",
+        "更高效的上网入口，从expert1网页导航开始",
+        "聚合常用网站与优质资源，分类清晰，搜索方便"
+    ];
+    let textIndex = 0, charIndex = 0, isDeleting = false;
+    const typeSpeed = 90, deleteSpeed = 60, pauseAfterTyping = 2200, pauseAfterDelete = 600;
+    const typeTextEl = document.getElementById("typeText");
+
+    function typeWriter() {
+        const current = texts[textIndex];
+        if (isDeleting) {
+            typeTextEl.textContent = current.substring(0, charIndex - 1);
+            charIndex--;
         } else {
-            let attempts = getAttempts();
-            attempts++;
-            setAttempts(attempts);
-            if (attempts >= maxAttempts) {
-                const lockUntil = Date.now() + lockDurationHours * 60 * 60 * 1000;
-                setLockUntil(lockUntil);
-                setAttempts(0);
-                errorEl.textContent = '密码错误次数过多，系统已锁定24小时';
-                updateLockUI();
-            } else {
-                const left = maxAttempts - attempts;
-                errorEl.textContent = `密码错误，还剩 ${left} 次尝试机会`;
-            }
-            passwordInput.value = '';
+            typeTextEl.textContent = current.substring(0, charIndex + 1);
+            charIndex++;
         }
-    };
-
-    window.lockModule = {
-        init: function() {
-            overlay = document.getElementById('lockOverlay');
-            passwordInput = document.getElementById('lockPassword');
-            lockBtn = document.getElementById('lockBtn');
-            errorEl = document.getElementById('lockError');
-            lockoutInfoEl = document.getElementById('lockoutInfo');
-
-            if (!overlay) return;
-
-            overlay.addEventListener('click', function(e) {
-                if (e.target === overlay) {
-                    errorEl.textContent = '请先输入密码解锁';
-                }
-            });
-
-            passwordInput.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') {
-                    handleUnlock();
-                }
-            });
-
-            if (cookieExpireDays > 0 && getCookie(cookieName) === "true") {
-                overlay.style.display = 'none';
-            } else {
-                if (isLocked()) {
-                    updateLockUI();
-                } else {
-                    const attempts = getAttempts();
-                    if (attempts > 0) {
-                        errorEl.textContent = `剩余尝试次数：${maxAttempts - attempts} 次`;
-                    }
-                }
-            }
+        if (!isDeleting && charIndex === current.length) {
+            setTimeout(() => { isDeleting = true; typeWriter(); }, pauseAfterTyping);
+        } else if (isDeleting && charIndex === 0) {
+            isDeleting = false;
+            textIndex = (textIndex + 1) % texts.length;
+            setTimeout(typeWriter, pauseAfterDelete);
+        } else {
+            setTimeout(typeWriter, isDeleting ? deleteSpeed : typeSpeed);
         }
-    };
+    }
+    typeWriter();
+
+    // 实时时钟
+    function updateTime() {
+        const now = new Date();
+        const h = String(now.getHours()).padStart(2, '0');
+        const m = String(now.getMinutes()).padStart(2, '0');
+        const s = String(now.getSeconds()).padStart(2, '0');
+        const timeBox = document.getElementById('timeBox');
+        if (timeBox) timeBox.innerText = `⏰现在是北京时间：${h}:${m}:${s}`;
+    }
+    updateTime();
+    setInterval(updateTime, 1000);
 })();

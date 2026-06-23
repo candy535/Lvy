@@ -8,40 +8,14 @@
     <link rel="stylesheet" href="./assets/css/lock.css">
 </head>
 <body>
-    <div id="header-box"></div>
-    <div id="nav-box"></div>
-    <div id="footer-box"></div>
-    <div id="lock-box"></div>
+    <div id="securityAlert">检测到危险代码，已拦截！</div>
 
-    <!-- 先加载密码锁JS，提前挂载handleUnlock全局函数 -->
+    <header id="header-container"></header>
+    <main id="nav-container"></main>
+    <footer id="footer-container"></footer>
+    <div id="lock-container"></div>
+
     <script src="./js/lock.js"></script>
-    <!-- 再加载页面主逻辑 -->
     <script src="./js/main.js"></script>
-
-    <!-- 并行加载所有组件，不互相阻塞 -->
-    <script>
-        async function loadComponent(url, targetId) {
-            try {
-                const res = await fetch(url);
-                const html = await res.text();
-                document.getElementById(targetId).innerHTML = html;
-            } catch (err) {
-                console.error("组件加载失败:", url, err);
-            }
-        }
-
-        window.addEventListener('DOMContentLoaded', async () => {
-            // 并行加载，一个失败不影响其他模块显示
-            Promise.all([
-                loadComponent('./components/header.html', 'header-box'),
-                loadComponent('./components/nav-list.html', 'nav-box'),
-                loadComponent('./components/footer.html', 'footer-box'),
-                loadComponent('./components/lock-modal.html', 'lock-box')
-            ]).then(() => {
-                // 全部组件渲染完成后再执行页面初始化
-                pageReady();
-            });
-        });
-    </script>
 </body>
 </html>

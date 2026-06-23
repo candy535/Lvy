@@ -9,3 +9,17 @@
 - 组件化异步加载
 
 ## 目录结构
+Lvy/
+├── index.html # 入口骨架页面
+├── README.md # 仓库说明
+├── assets/css/
+│ ├── main.css # 通用样式
+│ └── lock.css # 密码弹窗样式
+├── components/
+│ ├── header.html # 标题、打字机、搜索栏、搜索引擎
+│ ├── nav-list.html # 全部分类导航卡片
+│ ├── footer.html # 加载时延、作者声明
+│ └── lock-modal.html # 密码弹窗 DOM 结构
+└── js/
+├── lock.js # 密码解锁、锁定计数、Cookie 逻辑
+└── main.js # 时间、打字机、搜索、防复制主逻辑
